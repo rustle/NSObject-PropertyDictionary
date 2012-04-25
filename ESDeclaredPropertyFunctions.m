@@ -32,7 +32,7 @@ NSString * CreateStringFromCharSubString(char * string, NSRange range);
 // TODO: test the cost of locking to protect this cache vs just recalculating the properties every time
 static ESMutableDictionary *_propertyDictionaryCache;
 
-NSDictionary * GetPropertyDictionary(Class objectClass)
+NSDictionary * GetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties)
 {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
@@ -54,6 +54,18 @@ NSDictionary * GetPropertyDictionary(Class objectClass)
 			[propertyDictionary setObject:attributes forKey:attributes.name];
     }
     free(properties);
+	if (includeSuperclassProperties)
+	{
+		Class superclass = objectClass;
+		while ((superclass = class_getSuperclass(superclass)))
+		{
+			NSDictionary *superPropertyDictionary = GetPropertyDictionary(superclass, NO);
+			if (superPropertyDictionary)
+			{
+				[propertyDictionary addEntriesFromDictionary:superPropertyDictionary];
+			}
+		}
+	}
 	[_propertyDictionaryCache setObject:propertyDictionary forKey:objectClass];
 	return propertyDictionary;
 }

@@ -23,7 +23,7 @@
 
 + (NSDictionary *)propertyDictionary
 {
-	return GetPropertyDictionary([self class]);
+	return GetPropertyDictionary([self class], NO);
 }
 
 @end

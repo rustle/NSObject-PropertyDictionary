@@ -20,4 +20,4 @@
 #import <Foundation/Foundation.h>
 #import "ESDeclaredPropertyAttributes.h"
 
-NSDictionary * GetPropertyDictionary(Class objectClass);
+NSDictionary * GetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties);
