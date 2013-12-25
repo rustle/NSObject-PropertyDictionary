@@ -1,8 +1,8 @@
 //
-//  NSObject+PropertyDictionary.m
+//  NSObject+RSTLPropertyDictionary.m
 //
 //  Created by Doug Russell
-//  Copyright (c) 2011 Doug Russell. All rights reserved.
+//  Copyright (c) 2011, 2013 Doug Russell. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 //  limitations under the License.
 //  
 
-#import "NSObject+PropertyDictionary.h"
+#import "NSObject+RSTLPropertyDictionary.h"
+#import "RSTLDeclaredPropertyFunctions.h"
 
-@implementation NSObject (PropertyDictionary)
+@implementation NSObject (RSTLPropertyDictionary)
 
-+ (NSDictionary *)propertyDictionary
++ (NSDictionary *)rstlPropertyDictionary
 {
-	return GetPropertyDictionary([self class], NO);
+	return RSTLGetPropertyDictionary([self class], NO);
 }
 
 @end

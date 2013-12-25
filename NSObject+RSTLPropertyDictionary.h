@@ -1,8 +1,8 @@
 //
-//  NSObject+PropertyDictionary.h
+//  NSObject+RSTLPropertyDictionary.h
 //
 //  Created by Doug Russell
-//  Copyright (c) 2011 Doug Russell. All rights reserved.
+//  Copyright (c) 2011, 2013 Doug Russell. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,14 +18,12 @@
 //  
 
 #import <Foundation/Foundation.h>
-#import "ESDeclaredPropertyAttributes.h"
-#import "ESDeclaredPropertyFunctions.h"
 
-@interface NSObject (PropertyDictionary)
+@interface NSObject (RSTLPropertyDictionary)
 
 /**
- * @return Dictionary of ESDeclaredPropertyAttributes objects keyed by property name
+ * @return Dictionary of RSTLDeclaredPropertyAttributes objects keyed by property name
  */
-+ (NSDictionary *)propertyDictionary;
++ (NSDictionary *)rstlPropertyDictionary;
 
 @end
