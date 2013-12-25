@@ -19,6 +19,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define __RSTL64__ __LP64__ || (TARGET_OS_EMBEDDED && !TARGET_OS_IPHONE) || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64
+#define __RSTL64iOS__ !defined(OBJC_HIDE_64) && TARGET_OS_IPHONE && __LP64__
+
 typedef NS_ENUM(NSUInteger, RSTLPropertyStorageMethod) {
 	RSTLPropertyAssignStorage,
 	RSTLPropertyStrongStorage,
@@ -28,8 +31,8 @@ typedef NS_ENUM(NSUInteger, RSTLPropertyStorageMethod) {
 
 extern NSString *RSTLStringForPropertyStorageMethod(RSTLPropertyStorageMethod);
 
-// Not going to try to support
-// enum, struct, union, int *, void *, long, short, signed, unsigned, etc
+// Not going to try to support several type
+// enum, struct, union, int *, void *, etc
 typedef NS_ENUM(NSUInteger, RSTLPropertyStorageType) {
 	RSTLPropertyIDType,
 	RSTLPropertyObjectType,
@@ -38,8 +41,25 @@ typedef NS_ENUM(NSUInteger, RSTLPropertyStorageType) {
 	RSTLPropertyDoubleType,
 	RSTLPropertyFloatType,
 	RSTLPropertyIntType,
+	RSTLPropertyUnsignedIntType,
+	RSTLPropertyLongType,
+	RSTLPropertyUnsignedLongType,
+	RSTLPropertyLongLongType,
+	RSTLPropertyUnsignedLongLongType,
+	RSTLPRopertySelectorType,
 	RSTLPropertyUnsupportedType,
+#if __RSTL64iOS__
+	RSTLPropertyObjCBoolType = RSTLPropertyBoolType,
+#else
 	RSTLPropertyObjCBoolType = RSTLPropertyCharType,
+#endif
+#if __RSTL64__
+	RSTLPropertyNSIntegerType = RSTLPropertyLongLongType,
+	RSTLPropertyNSUIntegerType = RSTLPropertyUnsignedLongLongType,
+#else
+	RSTLPropertyNSIntegerType = RSTLPropertyIntType,
+	RSTLPropertyNSUIntegerType = RSTLPropertyUnsignedIntType,
+#endif
 };
 
 extern NSString *RSTLStringForPropertyStorageType(RSTLPropertyStorageType type);

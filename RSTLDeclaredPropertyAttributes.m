@@ -44,14 +44,42 @@ NSString *RSTLStringForPropertyStorageType(RSTLPropertyStorageType type)
 	{
 		RSTLEnumValueCase(RSTLPropertyIDType);
 		RSTLEnumValueCase(RSTLPropertyObjectType);
+		RSTLEnumValueCase(RSTLPropertyDoubleType);
+		RSTLEnumValueCase(RSTLPropertyFloatType);
+		RSTLEnumValueCase(RSTLPropertyLongType);
+		RSTLEnumValueCase(RSTLPropertyUnsignedLongType);
+		RSTLEnumValueCase(RSTLPRopertySelectorType);
+		RSTLEnumValueCase(RSTLPropertyUnsupportedType);
+#if __RSTL64iOS__
+		RSTLEnumValueCase(RSTLPropertyCharType);
+		case RSTLPropertyBoolType:
+			value = @"RSTLPropertyBoolType/RSTLPropertyObjCBoolType";
+			break;
+#else
 		RSTLEnumValueCase(RSTLPropertyBoolType);
 		case RSTLPropertyCharType:
 			value = @"RSTLPropertyCharType/RSTLPropertyObjCBoolType";
 			break;
-		RSTLEnumValueCase(RSTLPropertyDoubleType);
-		RSTLEnumValueCase(RSTLPropertyFloatType);
+#endif
+#if __RSTL64__
 		RSTLEnumValueCase(RSTLPropertyIntType);
-		RSTLEnumValueCase(RSTLPropertyUnsupportedType);
+		RSTLEnumValueCase(RSTLPropertyUnsignedIntType);
+		case RSTLPropertyLongLongType:
+			value = @"RSTLPropertyLongLongType/RSTLPropertyNSIntegerType";
+			break;
+		case RSTLPropertyUnsignedLongLongType:
+			value = @"RSTLPropertyUnsignedLongLongType/RSTLPropertyNSUIntegerType";
+			break;
+#else
+		RSTLEnumValueCase(RSTLPropertyLongLongType);
+		RSTLEnumValueCase(RSTLPropertyUnsignedLongLongType);
+		case RSTLPropertyIntType:
+			value = @"RSTLPropertyIntType/RSTLPropertyNSIntegerType";
+			break;
+		case RSTLPropertyUnsignedIntType:
+			value = @"RSTLPropertyUnsignedIntType/RSTLPropertyNSUIntegerType";
+			break;
+#endif
 	}
 	return value;
 }

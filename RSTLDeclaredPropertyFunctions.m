@@ -103,6 +103,24 @@ static RSTLDeclaredPropertyAttributes *rstlCreatePropertyAttributes(objc_propert
 			{
 				RSTLPropertyStorageType storageType;
 				// http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+				//c	char
+				//i	int
+				//s	short
+				//l	long, l is treated as a 32-bit quantity on 64-bit programs.
+				//q	long long
+				//C	unsigned char
+				//I	unsigned int
+				//S	unsigned short
+				//L	unsigned long
+				//Q	unsigned long long
+				//f	float
+				//d	double
+				//B	C++ bool or a C99 _Bool
+				//v	void
+				//*	character string (char *)
+				//@	object (whether statically typed or typed id)
+				//#	class object (Class)
+				//:	method selector (SEL)
 				switch (attribute[1]) {
 					case '@':
 					{
@@ -130,6 +148,24 @@ static RSTLDeclaredPropertyAttributes *rstlCreatePropertyAttributes(objc_propert
 						break;
 					case 'i':
 						storageType = RSTLPropertyIntType;
+						break;
+					case 'I':
+						storageType = RSTLPropertyUnsignedIntType;
+						break;
+					case 'l':
+						storageType = RSTLPropertyLongType;
+						break;
+					case 'L':
+						storageType = RSTLPropertyUnsignedLongType;
+						break;
+					case 'q':
+						storageType = RSTLPropertyLongLongType;
+						break;
+					case 'Q':
+						storageType = RSTLPropertyUnsignedLongLongType;
+						break;
+					case ':':
+						storageType = RSTLPRopertySelectorType;
 						break;
 					default:
 						storageType = RSTLPropertyUnsupportedType;
