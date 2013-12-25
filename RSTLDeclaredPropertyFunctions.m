@@ -25,9 +25,6 @@
 // http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html3
 // http://stackoverflow.com/questions/754824/get-an-object-attributes-list-in-objective-c
 
-RSTLDeclaredPropertyAttributes * RSTLCreatePropertyAttributes(objc_property_t property);
-NSString * RSTLCreateStringFromCharSubString(char * string, NSRange range);
-
 // Cache the properties dictionaries that have already been resolved
 // TODO: test the cost of locking to protect this cache vs just recalculating the properties every time
 
@@ -69,47 +66,21 @@ static void rstlPropertySetValueForKey(id key, id value)
 	});
 }
 
-NSDictionary * RSTLGetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties)
+static NSString *rstlCreateStringFromCharSubString(char * string, NSRange range) // Quick and dirty char to nsstring
 {
-	if (objectClass == nil)
+	char *substring = (char *)malloc(range.length+1);
+	strncpy(substring, string + range.location, range.length); // http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/strncpy.3.html
+	substring[range.length] = '\0'; // We're passing in chopped up bits of strings so they won't be null terminated
+	if (substring != NULL)
 	{
-		return nil;
+		NSString *newString = [[NSString alloc] initWithCString:substring encoding:NSUTF8StringEncoding];
+		free(substring);
+		return newString;
 	}
-	NSMutableDictionary *propertyDictionary = rstlPropertyValueForKey(objectClass);
-	if (propertyDictionary != nil)
-	{
-		return propertyDictionary;
-	}
-	propertyDictionary = [NSMutableDictionary dictionary];
-    unsigned int outCount, i;
-    objc_property_t *properties = class_copyPropertyList(objectClass, &outCount);
-    for (i = 0; i < outCount; i++) 
-	{
-        objc_property_t property = properties[i];
-        RSTLDeclaredPropertyAttributes *attributes = RSTLCreatePropertyAttributes(property);
-		if (attributes && attributes.name) // redundant check
-		{
-			[propertyDictionary setObject:attributes forKey:attributes.name];
-		}
-    }
-    free(properties);
-	if (includeSuperclassProperties)
-	{
-		Class superclass = objectClass;
-		while ((superclass = class_getSuperclass(superclass)))
-		{
-			NSDictionary *superPropertyDictionary = RSTLGetPropertyDictionary(superclass, NO);
-			if (superPropertyDictionary)
-			{
-				[propertyDictionary addEntriesFromDictionary:superPropertyDictionary];
-			}
-		}
-	}
-	rstlPropertySetValueForKey(objectClass, propertyDictionary);
-	return propertyDictionary;
+	return nil;
 }
 
-RSTLDeclaredPropertyAttributes * RSTLCreatePropertyAttributes(objc_property_t property) 
+static RSTLDeclaredPropertyAttributes *rstlCreatePropertyAttributes(objc_property_t property) 
 {
 	// 
 	RSTLDeclaredPropertyAttributes *propertyAttributes = [RSTLDeclaredPropertyAttributes new];
@@ -139,7 +110,7 @@ RSTLDeclaredPropertyAttributes * RSTLCreatePropertyAttributes(objc_property_t pr
 						if (len > 4) // Make sure we actually have type information (an id will be T@, any NSObject or subclass will be T@"CLASSNAME"
 						{
 							storageType = RSTLPropertyObjectType;
-							propertyAttributes.className = RSTLCreateStringFromCharSubString(attribute, NSMakeRange(3, strlen(attribute) - 4));
+							propertyAttributes.className = rstlCreateStringFromCharSubString(attribute, NSMakeRange(3, strlen(attribute) - 4));
 						}
 						else
 							storageType = RSTLPropertyIDType;
@@ -178,10 +149,10 @@ RSTLDeclaredPropertyAttributes * RSTLCreatePropertyAttributes(objc_property_t pr
 				propertyAttributes.nonatomic = YES;
 				break;
 			case 'G': // custom getter
-				propertyAttributes.getter = NSSelectorFromString(RSTLCreateStringFromCharSubString(attribute, NSMakeRange(1, strlen(attribute) - 1)));
+				propertyAttributes.getter = NSSelectorFromString(rstlCreateStringFromCharSubString(attribute, NSMakeRange(1, strlen(attribute) - 1)));
 				break;
 			case 'S': // custom setter
-				propertyAttributes.setter = NSSelectorFromString(RSTLCreateStringFromCharSubString(attribute, NSMakeRange(1, strlen(attribute) - 1)));
+				propertyAttributes.setter = NSSelectorFromString(rstlCreateStringFromCharSubString(attribute, NSMakeRange(1, strlen(attribute) - 1)));
 				break;
 			case 'D':
 				propertyAttributes.dynamic = YES;
@@ -204,16 +175,42 @@ RSTLDeclaredPropertyAttributes * RSTLCreatePropertyAttributes(objc_property_t pr
 	return propertyAttributes;
 }
 
-NSString * RSTLCreateStringFromCharSubString(char * string, NSRange range) // Quick and dirty char to nsstring
+NSDictionary *RSTLGetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties)
 {
-	char *substring = (char *)malloc(range.length+1);
-	strncpy(substring, string + range.location, range.length); // http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/strncpy.3.html
-	substring[range.length] = '\0'; // We're passing in chopped up bits of strings so they won't be null terminated
-	if (substring != NULL)
+	if (objectClass == nil)
 	{
-		NSString *newString = [[NSString alloc] initWithCString:substring encoding:NSUTF8StringEncoding];
-		free(substring);
-		return newString;
+		return nil;
 	}
-	return nil;
+	NSMutableDictionary *propertyDictionary = rstlPropertyValueForKey(objectClass);
+	if (propertyDictionary != nil)
+	{
+		return propertyDictionary;
+	}
+	propertyDictionary = [NSMutableDictionary dictionary];
+    unsigned int outCount, i;
+    objc_property_t *properties = class_copyPropertyList(objectClass, &outCount);
+    for (i = 0; i < outCount; i++) 
+	{
+        objc_property_t property = properties[i];
+        RSTLDeclaredPropertyAttributes *attributes = rstlCreatePropertyAttributes(property);
+		if (attributes && attributes.name) // redundant check
+		{
+			[propertyDictionary setObject:attributes forKey:attributes.name];
+		}
+    }
+    free(properties);
+	if (includeSuperclassProperties)
+	{
+		Class superclass = objectClass;
+		while ((superclass = class_getSuperclass(superclass)))
+		{
+			NSDictionary *superPropertyDictionary = RSTLGetPropertyDictionary(superclass, NO);
+			if (superPropertyDictionary)
+			{
+				[propertyDictionary addEntriesFromDictionary:superPropertyDictionary];
+			}
+		}
+	}
+	rstlPropertySetValueForKey(objectClass, propertyDictionary);
+	return propertyDictionary;
 }

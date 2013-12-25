@@ -19,4 +19,4 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSDictionary * RSTLGetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties);
+extern NSDictionary *RSTLGetPropertyDictionary(Class objectClass, BOOL includeSuperclassProperties);
