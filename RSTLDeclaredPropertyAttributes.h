@@ -33,11 +33,13 @@ extern NSString *RSTLStringForPropertyStorageMethod(RSTLPropertyStorageMethod);
 typedef NS_ENUM(NSUInteger, RSTLPropertyStorageType) {
 	RSTLPropertyIDType,
 	RSTLPropertyObjectType,
-	RSTLPropertyBoolType, // We assume that chars are BOOLs
+	RSTLPropertyBoolType, // Real C99 bool
+	RSTLPropertyCharType, // Probably a BOOL
 	RSTLPropertyDoubleType,
 	RSTLPropertyFloatType,
 	RSTLPropertyIntType,
 	RSTLPropertyUnsupportedType,
+	RSTLPropertyObjCBoolType = RSTLPropertyCharType,
 };
 
 extern NSString *RSTLStringForPropertyStorageType(RSTLPropertyStorageType type);

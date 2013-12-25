@@ -117,6 +117,9 @@ static RSTLDeclaredPropertyAttributes *rstlCreatePropertyAttributes(objc_propert
 						break;
 					}
 					case 'c':
+						storageType = RSTLPropertyCharType;
+						break;
+					case 'B':
 						storageType = RSTLPropertyBoolType;
 						break;
 					case 'd':

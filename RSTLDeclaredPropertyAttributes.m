@@ -45,6 +45,9 @@ NSString *RSTLStringForPropertyStorageType(RSTLPropertyStorageType type)
 		RSTLEnumValueCase(RSTLPropertyIDType);
 		RSTLEnumValueCase(RSTLPropertyObjectType);
 		RSTLEnumValueCase(RSTLPropertyBoolType);
+		case RSTLPropertyCharType:
+			value = @"RSTLPropertyCharType/RSTLPropertyObjCBoolType";
+			break;
 		RSTLEnumValueCase(RSTLPropertyDoubleType);
 		RSTLEnumValueCase(RSTLPropertyFloatType);
 		RSTLEnumValueCase(RSTLPropertyIntType);
